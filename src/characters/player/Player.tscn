@@ -42,8 +42,8 @@ tracks/0/keys = {
 [sub_resource type="AnimationNodeStateMachinePlayback" id=3]
 
 [node name="Player" type="KinematicBody2D"]
-position = Vector2( 80, 96 )
 script = ExtResource( 1 )
+jumpSpeed = 150.0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource( 1 )
