@@ -21,6 +21,8 @@ public class Player : KinematicBody2D
     private AnimationTree animationTree;
     private AnimationNodeStateMachinePlayback animationPlayback;
 
+    private Area2D hitbox;
+
     public enum State
     {
         Normal,
@@ -37,6 +39,9 @@ public class Player : KinematicBody2D
         animationTree = GetNode("AnimationTree") as AnimationTree;
         animationPlayback = animationTree.Get("parameters/playback") as AnimationNodeStateMachinePlayback;
         animationPlayback.Start("stand");
+
+        hitbox = GetNode("Sprite/Hitbox") as Area2D;
+        hitbox.Connect("area_entered", this, "_On_Hitbox_AreaEntered");
     }
 
     public override void _Process(float delta)
@@ -76,6 +81,17 @@ public class Player : KinematicBody2D
             movementDirection, // Linear velocity
             Vector2.Up // Floor normal vector
         );
+    }
+
+    private void _On_Hitbox_AreaEntered(Area2D area)
+    {
+        Node owner = area.GetOwner();
+
+        if (owner is Enemy)
+        {
+            Enemy enemy = owner as Enemy;
+            enemy.Attack();
+        }
     }
 
     public void Transition(State nextState)

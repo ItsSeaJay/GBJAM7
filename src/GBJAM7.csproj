@@ -49,9 +49,10 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="characters\enemies\sandbag\Sandbag.cs" />
+    <Compile Include="characters\enemies\sandbag\EnemySandbag.cs" />
     <Compile Include="characters\player\Player.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="characters\enemies\Enemy.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
