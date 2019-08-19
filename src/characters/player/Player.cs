@@ -10,14 +10,13 @@ public class Player : KinematicBody2D
 
     [Export]
     public float jumpSpeed = 256.0f;
-    [Export]
-    public float jumpCoyoteTime = 1.0f;
-    private float coyoteTime = 0.0f;
 
     [Export]
     public float fallGravity = 8.0f;
     [Export]
     public float fallTerminalVelocity = 256.0f;
+
+    private Sprite sprite;
 
     public enum State
     {
@@ -25,6 +24,13 @@ public class Player : KinematicBody2D
         Airborne
     }
     private State state = State.Normal;
+
+    public override void _Ready()
+    {
+        base._Ready();
+
+        sprite = GetNode("Sprite") as Sprite;
+    }
 
     public override void _Process(float delta)
     {
@@ -82,10 +88,12 @@ public class Player : KinematicBody2D
         if (Input.IsActionPressed("move_left"))
         {
             inputAxis -= 1.0f;
+            sprite.SetScale(new Vector2(-1.0f, 1.0f));
         }
         else if (Input.IsActionPressed("move_right"))
         {
             inputAxis += 1.0f;
+            sprite.SetScale(new Vector2(1.0f, 1.0f));
         }
 
         movementDirection.x = inputAxis * movementSpeed;
