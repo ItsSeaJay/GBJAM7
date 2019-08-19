@@ -9,21 +9,34 @@ extents = Vector2( 4, 8 )
 
 [sub_resource type="Animation" id=4]
 resource_name = "attack"
-
-[sub_resource type="Animation" id=2]
-resource_name = "stand"
-loop = true
+length = 0.5
 tracks/0/type = "value"
-tracks/0/path = NodePath("Sprite:texture")
+tracks/0/path = NodePath("Sprite:frame")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/imported = false
 tracks/0/enabled = true
 tracks/0/keys = {
-"times": PoolRealArray( 0, 1 ),
+"times": PoolRealArray( 0, 0.5 ),
 "transitions": PoolRealArray( 1, 1 ),
-"update": 1,
-"values": [ ExtResource( 2 ), ExtResource( 2 ) ]
+"update": 0,
+"values": [ 2, 5 ]
+}
+
+[sub_resource type="Animation" id=2]
+resource_name = "stand"
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.5 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ 0, 1 ]
 }
 
 [sub_resource type="AnimationNodeStateMachinePlayback" id=3]
@@ -36,7 +49,10 @@ script = ExtResource( 1 )
 shape = SubResource( 1 )
 
 [node name="Sprite" type="Sprite" parent="."]
+position = Vector2( 0, -8 )
 texture = ExtResource( 2 )
+vframes = 2
+hframes = 4
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 anims/attack = SubResource( 4 )
@@ -46,4 +62,5 @@ anims/stand = SubResource( 2 )
 tree_root = ExtResource( 3 )
 anim_player = NodePath("../AnimationPlayer")
 active = true
+root_motion_track = NodePath("Sprite:frame")
 parameters/playback = SubResource( 3 )

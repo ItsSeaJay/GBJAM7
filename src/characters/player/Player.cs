@@ -17,6 +17,9 @@ public class Player : KinematicBody2D
     public float fallTerminalVelocity = 256.0f;
 
     private Sprite sprite;
+    private AnimationPlayer animationPlayer;
+    private AnimationTree animationTree;
+    private AnimationNodeStateMachinePlayback animationPlayback;
 
     public enum State
     {
@@ -30,6 +33,10 @@ public class Player : KinematicBody2D
         base._Ready();
 
         sprite = GetNode("Sprite") as Sprite;
+        animationPlayer = GetNode("AnimationPlayer") as AnimationPlayer;
+        animationTree = GetNode("AnimationTree") as AnimationTree;
+        animationPlayback = animationTree.Get("parameters/playback") as AnimationNodeStateMachinePlayback;
+        animationPlayback.Start("stand");
     }
 
     public override void _Process(float delta)
@@ -46,6 +53,7 @@ public class Player : KinematicBody2D
             case State.Normal:
                 HandleMovement();
                 HandleJumping();
+                HandleAttacking();
 
                 if (!IsOnFloor())
                 {
@@ -115,5 +123,13 @@ public class Player : KinematicBody2D
         }
 
         movementDirection.y = Mathf.Min(movementDirection.y + fallGravity, fallTerminalVelocity);
+    }
+
+    private void HandleAttacking()
+    {
+        if (Input.IsActionJustPressed("move_attack"))
+        {
+            animationPlayback.Travel("attack");
+        }
     }
 }
