@@ -4,17 +4,22 @@ using System;
 public class Player : KinematicBody2D
 {
     [Export]
-    private float movementSpeed = 128.0f;
-    private Vector2 movementDirection = new Vector2();
-    private Vector2 movementVelocity = new Vector2(); 
+    private float moveSpeed = 128.0f;
+    private Vector2 moveDirection = new Vector2();
+    private Vector2 moveVelocity = new Vector2(); 
 
     [Export]
     public float jumpSpeed = 256.0f;
+    [Export]
+    public float jumpGravity = 8.0f;
+    [Export]
+    public float jumpTerminalVelocity = 256.0f;
+
+    public float slideWallSpeed = 1.0f;
 
     [Export]
-    public float fallGravity = 8.0f;
-    [Export]
-    public float fallTerminalVelocity = 256.0f;
+    public float climbStaminaMax = 100.0f;
+    public float climbStamina;
 
     private Sprite sprite;
     private AnimationPlayer animationPlayer;
@@ -25,10 +30,13 @@ public class Player : KinematicBody2D
 
     public enum State
     {
-        Normal,
-        Airborne
+        Grounded,
+        Airborne,
+        Sliding,
+        Climbing,
+        Attack
     }
-    private State state = State.Normal;
+    private State state = State.Grounded;
 
     public override void _Ready()
     {
@@ -42,6 +50,8 @@ public class Player : KinematicBody2D
 
         hitbox = GetNode("Sprite/Hitbox") as Area2D;
         hitbox.Connect("area_entered", this, "_On_Hitbox_AreaEntered");
+
+        climbStamina = climbStaminaMax;
     }
 
     public override void _Process(float delta)
@@ -55,7 +65,7 @@ public class Player : KinematicBody2D
 
         switch (state)
         {
-            case State.Normal:
+            case State.Grounded:
                 HandleMovement();
                 HandleJumping();
                 HandleAttacking();
@@ -69,16 +79,25 @@ public class Player : KinematicBody2D
                 HandleMovement();
                 HandleFalling();
 
+                if (IsOnWall())
+                {
+                    jumpTerminalVelocity = 128.0f;
+                }
+                else
+                {
+                    jumpTerminalVelocity = 256.0f;
+                }
+
                 if (IsOnFloor())
                 {
-                    Transition(State.Normal);
+                    Transition(State.Grounded);
                 }
                 break;
         }
 
-        movementVelocity = MoveAndSlide
+        moveVelocity = MoveAndSlide
         (
-            movementDirection, // Linear velocity
+            moveDirection, // Linear velocity
             Vector2.Up // Floor normal vector
         );
     }
@@ -109,41 +128,43 @@ public class Player : KinematicBody2D
     {
         float inputAxis = 0.0f;
 
-        if (Input.IsActionPressed("move_left"))
+        if (Input.IsActionPressed("dpad_left"))
         {
             inputAxis -= 1.0f;
             sprite.SetScale(new Vector2(-1.0f, 1.0f));
         }
-        else if (Input.IsActionPressed("move_right"))
+        else if (Input.IsActionPressed("dpad_right"))
         {
             inputAxis += 1.0f;
             sprite.SetScale(new Vector2(1.0f, 1.0f));
         }
 
-        movementDirection.x = inputAxis * movementSpeed;
+        moveDirection.x = inputAxis * moveSpeed;
     }
 
     private void HandleJumping()
     {
-        if (Input.IsActionJustPressed("move_jump"))
+        if (Input.IsActionJustPressed("button_a"))
         {
-            movementDirection.y = -jumpSpeed;
+            moveDirection.y = -jumpSpeed;
         }
     }
 
     private void HandleFalling()
     {
+        // Don't maintain momentum when the player hits a cieling.
         if (IsOnCeiling())
         {
-            movementDirection.y = 0.0f;
+            moveDirection.y = 0.0f;
         }
 
-        movementDirection.y = Mathf.Min(movementDirection.y + fallGravity, fallTerminalVelocity);
+        // moveDirection.y = Mathf.Min(moveDirection.y + jumpGravity, jumpTerminalVelocity);
+        moveDirection.y = MathsUtils.Approach(moveDirection.y, jumpTerminalVelocity, jumpGravity);
     }
 
     private void HandleAttacking()
     {
-        if (Input.IsActionJustPressed("move_attack"))
+        if (Input.IsActionJustPressed("button_b"))
         {
             animationPlayback.Travel("attack");
         }

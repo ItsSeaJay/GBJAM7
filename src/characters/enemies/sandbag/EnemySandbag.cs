@@ -66,5 +66,6 @@ public class EnemySandbag : Enemy
     {
         moveDirection.x += -sprite.GetScale().x * moveKnockback;
         moveDirection.y = -moveKnockback;
+        animationPlayback.Travel("hurt");
     }
 }

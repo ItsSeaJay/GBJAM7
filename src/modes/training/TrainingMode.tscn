@@ -18,4 +18,4 @@ tile_data = PoolIntArray( -65531, 2, 0, 0, 1, 0, 1, 1, 0, 2, 1, 0, 3, 1, 0, 4, 1
 position = Vector2( 24, 120 )
 
 [node name="Sandbag" parent="." instance=ExtResource( 3 )]
-position = Vector2( 78.7943, 64 )
+position = Vector2( 80, 104 )

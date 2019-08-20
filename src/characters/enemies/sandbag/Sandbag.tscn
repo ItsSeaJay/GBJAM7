@@ -6,12 +6,11 @@
 [sub_resource type="RectangleShape2D" id=1]
 extents = Vector2( 4, 8 )
 
-[sub_resource type="RectangleShape2D" id=10]
+[sub_resource type="RectangleShape2D" id=2]
 extents = Vector2( 5.09968, 8.17938 )
 
-[sub_resource type="Animation" id=6]
+[sub_resource type="Animation" id=3]
 resource_name = "hurt"
-length = 0.1
 tracks/0/type = "value"
 tracks/0/path = NodePath("Sprite:frame")
 tracks/0/interp = 1
@@ -19,10 +18,10 @@ tracks/0/loop_wrap = true
 tracks/0/imported = false
 tracks/0/enabled = true
 tracks/0/keys = {
-"times": PoolRealArray( 0, 0.1 ),
-"transitions": PoolRealArray( 1, 1 ),
+"times": PoolRealArray( 0, 0.3, 1 ),
+"transitions": PoolRealArray( 1, 1, 1 ),
 "update": 0,
-"values": [ 6, 7 ]
+"values": [ 6, 7, 7 ]
 }
 
 [sub_resource type="Animation" id=4]
@@ -42,25 +41,26 @@ tracks/0/keys = {
 "values": [ 0, 5, 5 ]
 }
 
-[sub_resource type="AnimationNodeAnimation" id=7]
+[sub_resource type="AnimationNodeAnimation" id=5]
 animation = "hurt"
 
-[sub_resource type="AnimationNodeAnimation" id=5]
+[sub_resource type="AnimationNodeAnimation" id=6]
 animation = "idle"
 
+[sub_resource type="AnimationNodeStateMachineTransition" id=7]
+
 [sub_resource type="AnimationNodeStateMachineTransition" id=8]
+auto_advance = true
 
-[sub_resource type="AnimationNodeStateMachineTransition" id=9]
-
-[sub_resource type="AnimationNodeStateMachine" id=2]
-states/hurt/node = SubResource( 7 )
+[sub_resource type="AnimationNodeStateMachine" id=9]
+states/hurt/node = SubResource( 5 )
 states/hurt/position = Vector2( 782, 127 )
-states/idle/node = SubResource( 5 )
+states/idle/node = SubResource( 6 )
 states/idle/position = Vector2( 580, 127 )
-transitions = [ "idle", "hurt", SubResource( 8 ), "hurt", "idle", SubResource( 9 ) ]
+transitions = [ "idle", "hurt", SubResource( 7 ), "hurt", "idle", SubResource( 8 ) ]
 graph_offset = Vector2( 41, 38 )
 
-[sub_resource type="AnimationNodeStateMachinePlayback" id=3]
+[sub_resource type="AnimationNodeStateMachinePlayback" id=10]
 
 [node name="EnemySandbag" type="KinematicBody2D"]
 collision_layer = 2
@@ -78,20 +78,20 @@ __meta__ = {
 texture = ExtResource( 2 )
 vframes = 4
 hframes = 4
-frame = 7
+frame = 3
 
 [node name="Hurtbox" type="Area2D" parent="Sprite"]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Sprite/Hurtbox"]
 position = Vector2( -1.20566, 0 )
-shape = SubResource( 10 )
+shape = SubResource( 2 )
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
-anims/hurt = SubResource( 6 )
+anims/hurt = SubResource( 3 )
 anims/idle = SubResource( 4 )
 
 [node name="AnimationTree" type="AnimationTree" parent="."]
-tree_root = SubResource( 2 )
+tree_root = SubResource( 9 )
 anim_player = NodePath("../AnimationPlayer")
 active = true
-parameters/playback = SubResource( 3 )
+parameters/playback = SubResource( 10 )

@@ -53,6 +53,7 @@
     <Compile Include="characters\player\Player.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="characters\enemies\Enemy.cs" />
+    <Compile Include="utils\MathsUtils.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
