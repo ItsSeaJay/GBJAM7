@@ -5,7 +5,10 @@ public class Player : KinematicBody2D
 {
     [Export]
     private float moveSpeed = 64.0f;
-    private Vector2 moveDirection = new Vector2();
+    [Export]
+    float moveAcceleration = 8.0f;
+    [Export]
+    float moveFriction = 8.0f;
     private Vector2 moveVelocity = new Vector2();
 
     [Export]
@@ -16,6 +19,8 @@ public class Player : KinematicBody2D
     public float jumpTerminalVelocity = 128.0f;
     public float jumpSpeed;
     public float jumpGravity;
+
+    public float fallGravity = 1.0f;
 
     public float wallSlideSpeed = 1.0f;
 
@@ -47,6 +52,8 @@ public class Player : KinematicBody2D
         jumpGravity = 2.0f * jumpHeight / Mathf.Pow(jumpDuration / 2.0f, 2);
         jumpSpeed = -Mathf.Sqrt(2.0f * jumpGravity * jumpHeight);
 
+
+
         sprite = GetNode("Sprite") as Sprite;
         animationPlayer = GetNode("AnimationPlayer") as AnimationPlayer;
         animationTree = GetNode("AnimationTree") as AnimationTree;
@@ -62,6 +69,8 @@ public class Player : KinematicBody2D
     public override void _Process(float delta)
     {
         base._Process(delta);
+
+        GD.Print(moveVelocity.ToString());
     }
 
     public override void _PhysicsProcess(float delta)
@@ -74,20 +83,22 @@ public class Player : KinematicBody2D
                 HandleMovement();
                 HandleJumping();
                 HandleAttacking();
+                MoveAndSlide(moveVelocity, Vector2.Up);
 
                 if (!IsOnFloor())
                 {
                     Transition(State.Airborne);
                 }
+
+                if (IsOnWall())
+                {
+                    moveVelocity.x = 0.0f;
+                }
                 break;
             case State.Airborne:
                 HandleMovement();
                 HandleFalling(delta);
-
-                if (Input.IsActionJustReleased("button_a"))
-                {
-                    moveDirection.y = 0.0f;
-                }
+                MoveAndSlide(moveVelocity, Vector2.Up);
 
                 if (IsOnWall())
                 {
@@ -102,25 +113,25 @@ public class Player : KinematicBody2D
             case State.Sliding:
                 HandleMovement();
                 HandleFalling(delta);
+                MoveAndSlide(moveVelocity, Vector2.Up);
 
                 if (Input.IsActionJustPressed("button_a"))
                 {
-                    moveDirection.x = jumpSpeed * -sprite.GetScale().x;
-                    moveDirection.y = -jumpSpeed;
+                    moveVelocity.x = jumpSpeed * sprite.GetScale().x;
+                    moveVelocity.y = jumpSpeed;
                 }
 
                 if (!IsOnWall())
                 {
                     Transition(State.Airborne);
                 }
+
+                if (IsOnFloor())
+                {
+                    Transition(State.Grounded);
+                }
                 break;
         }
-
-        moveVelocity = MoveAndSlide
-        (
-            moveDirection, // Linear velocity
-            Vector2.Up // Floor normal vector
-        );
     }
 
     private void _On_Hitbox_AreaEntered(Area2D area)
@@ -155,27 +166,32 @@ public class Player : KinematicBody2D
 
     private void HandleMovement()
     {
-        float inputAxis = 0.0f;
-
         if (Input.IsActionPressed("dpad_left"))
         {
-            inputAxis -= 1.0f;
+            moveVelocity.x = Utils.Approach(moveVelocity.x, -moveSpeed, moveAcceleration);
             sprite.SetScale(new Vector2(-1.0f, 1.0f));
         }
         else if (Input.IsActionPressed("dpad_right"))
         {
-            inputAxis += 1.0f;
+            moveVelocity.x = Utils.Approach(moveVelocity.x, moveSpeed, moveAcceleration);
             sprite.SetScale(new Vector2(1.0f, 1.0f));
         }
+        else
+        {
+            moveVelocity.x = Utils.Approach(moveVelocity.x, 0.0f, moveFriction);
+        }
+    }
 
-        moveDirection.x = inputAxis * moveSpeed;
+    private bool IsMoving()
+    {
+        return Input.IsActionPressed("dpad_left") || Input.IsActionPressed("dpad_right");
     }
 
     private void HandleJumping()
     {
         if (Input.IsActionJustPressed("button_a"))
         {
-            moveDirection.y = jumpSpeed;
+            moveVelocity.y = jumpSpeed;
         }
     }
 
@@ -184,10 +200,10 @@ public class Player : KinematicBody2D
         // Don't maintain momentum when the player hits a cieling.
         if (IsOnCeiling())
         {
-            moveDirection.y = 0.0f;
+            moveVelocity.y = 0.0f;
         }
 
-        moveDirection.y += jumpGravity * delta;
+        moveVelocity.y += jumpGravity * delta;
     }
 
     private void HandleAttacking()

@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-public abstract class MathsUtils
+public abstract class Utils
 {
     public static float Approach(float from, float to, float amount)
     {
