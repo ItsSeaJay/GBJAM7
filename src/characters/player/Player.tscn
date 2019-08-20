@@ -7,10 +7,10 @@
 [sub_resource type="RectangleShape2D" id=1]
 extents = Vector2( 4, 8 )
 
-[sub_resource type="RectangleShape2D" id=5]
+[sub_resource type="RectangleShape2D" id=2]
 extents = Vector2( 8, 8 )
 
-[sub_resource type="Animation" id=6]
+[sub_resource type="Animation" id=3]
 resource_name = "attack"
 tracks/0/type = "value"
 tracks/0/path = NodePath("Sprite:frame")
@@ -37,7 +37,7 @@ tracks/1/keys = {
 "values": [ true, false, false, true ]
 }
 
-[sub_resource type="Animation" id=2]
+[sub_resource type="Animation" id=4]
 resource_name = "stand"
 loop = true
 tracks/0/type = "value"
@@ -47,17 +47,18 @@ tracks/0/loop_wrap = true
 tracks/0/imported = false
 tracks/0/enabled = true
 tracks/0/keys = {
-"times": PoolRealArray( 0, 0.5 ),
-"transitions": PoolRealArray( 1, 1 ),
+"times": PoolRealArray( 0, 0.4, 0.7, 1 ),
+"transitions": PoolRealArray( 1, 1, 1, 1 ),
 "update": 0,
-"values": [ 0, 1 ]
+"values": [ 0, 1, 1, 0 ]
 }
 
-[sub_resource type="AnimationNodeStateMachinePlayback" id=3]
+[sub_resource type="AnimationNodeStateMachinePlayback" id=5]
 
 [node name="Player" type="KinematicBody2D"]
 script = ExtResource( 1 )
-jumpSpeed = 150.0
+jumpDuration = 10.0
+jumpHeight = 100000.0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource( 1 )
@@ -67,21 +68,25 @@ position = Vector2( 0, -8 )
 texture = ExtResource( 2 )
 vframes = 2
 hframes = 4
+frame = 1
 
 [node name="Hitbox" type="Area2D" parent="Sprite"]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Sprite/Hitbox"]
 position = Vector2( 8, 8 )
-shape = SubResource( 5 )
+shape = SubResource( 2 )
 disabled = true
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
-anims/attack = SubResource( 6 )
-anims/stand = SubResource( 2 )
+anims/attack = SubResource( 3 )
+anims/stand = SubResource( 4 )
 
 [node name="AnimationTree" type="AnimationTree" parent="."]
 tree_root = ExtResource( 3 )
 anim_player = NodePath("../AnimationPlayer")
 active = true
 root_motion_track = NodePath("Sprite:frame")
-parameters/playback = SubResource( 3 )
+parameters/playback = SubResource( 5 )
+
+[node name="Camera2D" type="Camera2D" parent="."]
+current = true

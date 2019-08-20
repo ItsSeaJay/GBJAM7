@@ -1,18 +1,23 @@
 ﻿<Properties>
-  <MonoDevelop.Ide.Workbench ActiveDocument="utils/MathsUtils.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="characters/player/Player.cs">
     <Files>
-      <File FileName="characters/player/Player.cs" Line="145" Column="48" />
-      <File FileName="utils/MathsUtils.cs" Line="4" Column="27" />
+      <File FileName="characters/player/Player.cs" Line="1" Column="1" />
+      <File FileName="characters/enemies/sandbag/EnemySandbag.cs" Line="13" Column="13" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
         <State name="__root__">
           <Node name="GBJAM7" expanded="True">
             <Node name="GBJAM7" expanded="True">
-              <Node name="characters" expanded="True" />
-              <Node name="utils" expanded="True">
-                <Node name="MathsUtils.cs" selected="True" />
+              <Node name="characters" expanded="True">
+                <Node name="enemies" expanded="True">
+                  <Node name="sandbag" expanded="True" />
+                </Node>
+                <Node name="player" expanded="True">
+                  <Node name="Player.cs" selected="True" />
+                </Node>
               </Node>
+              <Node name="utils" expanded="True" />
             </Node>
           </Node>
         </State>

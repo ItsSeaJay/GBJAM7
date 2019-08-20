@@ -6,16 +6,18 @@ public class Player : KinematicBody2D
     [Export]
     private float moveSpeed = 128.0f;
     private Vector2 moveDirection = new Vector2();
-    private Vector2 moveVelocity = new Vector2(); 
+    private Vector2 moveVelocity = new Vector2();
 
     [Export]
-    public float jumpSpeed = 256.0f;
+    public float jumpDuration = 4.0f;
     [Export]
-    public float jumpGravity = 8.0f;
+    public float jumpHeight = 128.0f;
     [Export]
-    public float jumpTerminalVelocity = 256.0f;
+    public float jumpTerminalVelocity = 128.0f;
+    public float jumpSpeed;
+    public float jumpGravity;
 
-    public float slideWallSpeed = 1.0f;
+    public float wallSlideSpeed = 1.0f;
 
     [Export]
     public float climbStaminaMax = 100.0f;
@@ -41,6 +43,11 @@ public class Player : KinematicBody2D
     public override void _Ready()
     {
         base._Ready();
+
+        jumpGravity = -(2 * jumpHeight) / Mathf.Pow(jumpDuration, 2);
+        jumpSpeed = Mathf.Abs(jumpGravity) * jumpDuration;
+
+        GD.Print(jumpSpeed, " ", jumpGravity);
 
         sprite = GetNode("Sprite") as Sprite;
         animationPlayer = GetNode("AnimationPlayer") as AnimationPlayer;
@@ -81,16 +88,27 @@ public class Player : KinematicBody2D
 
                 if (IsOnWall())
                 {
-                    jumpTerminalVelocity = 128.0f;
-                }
-                else
-                {
-                    jumpTerminalVelocity = 256.0f;
+                    Transition(State.Sliding);
                 }
 
                 if (IsOnFloor())
                 {
                     Transition(State.Grounded);
+                }
+                break;
+            case State.Sliding:
+                HandleMovement();
+                HandleFalling();
+
+                if (Input.IsActionJustPressed("button_a"))
+                {
+                    moveDirection.x = jumpSpeed * -sprite.GetScale().x;
+                    moveDirection.y = -jumpSpeed;
+                }
+
+                if (!IsOnWall())
+                {
+                    Transition(State.Airborne);
                 }
                 break;
         }
@@ -117,7 +135,15 @@ public class Player : KinematicBody2D
     {
         switch (nextState)
         {
-            default:
+            case State.Grounded:
+                break;
+            case State.Airborne:
+                break;
+            case State.Attack:
+                break;
+            case State.Sliding:
+                break;
+            case State.Climbing:
                 break;
         }
         
