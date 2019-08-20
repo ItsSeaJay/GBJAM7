@@ -4,14 +4,14 @@ using System;
 public class Player : KinematicBody2D
 {
     [Export]
-    private float moveSpeed = 128.0f;
+    private float moveSpeed = 64.0f;
     private Vector2 moveDirection = new Vector2();
     private Vector2 moveVelocity = new Vector2();
 
     [Export]
-    public float jumpDuration = 4.0f;
+    public float jumpDuration = 0.4f;
     [Export]
-    public float jumpHeight = 128.0f;
+    public float jumpHeight = 48.0f;
     [Export]
     public float jumpTerminalVelocity = 128.0f;
     public float jumpSpeed;
@@ -44,10 +44,8 @@ public class Player : KinematicBody2D
     {
         base._Ready();
 
-        jumpGravity = 2 * jumpHeight / Mathf.Pow(jumpDuration, 2);
-        jumpSpeed = -Mathf.Sqrt(2 * jumpGravity * jumpHeight);
-
-        GD.Print(jumpSpeed, " ", jumpGravity);
+        jumpGravity = 2.0f * jumpHeight / Mathf.Pow(jumpDuration / 2.0f, 2);
+        jumpSpeed = -Mathf.Sqrt(2.0f * jumpGravity * jumpHeight);
 
         sprite = GetNode("Sprite") as Sprite;
         animationPlayer = GetNode("AnimationPlayer") as AnimationPlayer;
@@ -85,6 +83,11 @@ public class Player : KinematicBody2D
             case State.Airborne:
                 HandleMovement();
                 HandleFalling(delta);
+
+                if (Input.IsActionJustReleased("button_a"))
+                {
+                    moveDirection.y = 0.0f;
+                }
 
                 if (IsOnWall())
                 {
