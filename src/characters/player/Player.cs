@@ -44,8 +44,8 @@ public class Player : KinematicBody2D
     {
         base._Ready();
 
-        jumpGravity = -(2 * jumpHeight) / Mathf.Pow(jumpDuration, 2);
-        jumpSpeed = Mathf.Abs(jumpGravity) * jumpDuration;
+        jumpGravity = 2 * jumpHeight / Mathf.Pow(jumpDuration, 2);
+        jumpSpeed = -Mathf.Sqrt(2 * jumpGravity * jumpHeight);
 
         GD.Print(jumpSpeed, " ", jumpGravity);
 
@@ -84,7 +84,7 @@ public class Player : KinematicBody2D
                 break;
             case State.Airborne:
                 HandleMovement();
-                HandleFalling();
+                HandleFalling(delta);
 
                 if (IsOnWall())
                 {
@@ -98,7 +98,7 @@ public class Player : KinematicBody2D
                 break;
             case State.Sliding:
                 HandleMovement();
-                HandleFalling();
+                HandleFalling(delta);
 
                 if (Input.IsActionJustPressed("button_a"))
                 {
@@ -172,11 +172,11 @@ public class Player : KinematicBody2D
     {
         if (Input.IsActionJustPressed("button_a"))
         {
-            moveDirection.y = -jumpSpeed;
+            moveDirection.y = jumpSpeed;
         }
     }
 
-    private void HandleFalling()
+    private void HandleFalling(float delta)
     {
         // Don't maintain momentum when the player hits a cieling.
         if (IsOnCeiling())
@@ -184,8 +184,7 @@ public class Player : KinematicBody2D
             moveDirection.y = 0.0f;
         }
 
-        // moveDirection.y = Mathf.Min(moveDirection.y + jumpGravity, jumpTerminalVelocity);
-        moveDirection.y = MathsUtils.Approach(moveDirection.y, jumpTerminalVelocity, jumpGravity);
+        moveDirection.y += jumpGravity * delta;
     }
 
     private void HandleAttacking()
