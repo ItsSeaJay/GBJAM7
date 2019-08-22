@@ -4,33 +4,37 @@ using System;
 public class Player : KinematicBody2D
 {
     [Export]
-    private float moveSpeed = 64.0f;
+    private float moveSpeed = 128.0f;
     [Export]
-    float moveAcceleration = 8.0f;
+    float moveAcceleration = 16.0f;
     [Export]
     float moveFriction = 8.0f;
     private Vector2 moveVelocity = new Vector2();
 
     [Export]
-    public float jumpDuration = 0.4f;
+    public float jumpDuration = 0.64f;
     [Export]
     public float jumpHeight = 48.0f;
-    [Export]
-    public float jumpTerminalVelocity = 128.0f;
     public float jumpSpeed;
     public float jumpGravity;
 
-    public float fallGravity = 1.0f;
-
-    public float wallSlideSpeed = 1.0f;
+    [Export]
+    public float fallDuration = 0.48f;
+    public float fallGravity;
 
     [Export]
-    public float climbStaminaMax = 100.0f;
-    public float climbStamina;
+    public float wallSlideTerminalVelocity = 64.0f;
+    [Export]
+    public float airborneTerminalVelocity = 128.0f;
+    private float terminalVelocity;
+
+    [Export]
+    public float climbSpeed = 64.0f;
 
     private Sprite sprite;
     private AnimationPlayer animationPlayer;
     private AnimationTree animationTree;
+    private AnimationNodeStateMachine animationNodeStateMachine;
     private AnimationNodeStateMachinePlayback animationPlayback;
 
     private Area2D hitbox;
@@ -39,7 +43,7 @@ public class Player : KinematicBody2D
     {
         Grounded,
         Airborne,
-        Sliding,
+        WallSlide,
         Climbing,
         Attack
     }
@@ -50,27 +54,25 @@ public class Player : KinematicBody2D
         base._Ready();
 
         jumpGravity = 2.0f * jumpHeight / Mathf.Pow(jumpDuration / 2.0f, 2);
+        fallGravity = 2.0f * jumpHeight / Mathf.Pow(fallDuration / 2.0f, 2);
         jumpSpeed = -Mathf.Sqrt(2.0f * jumpGravity * jumpHeight);
-
-
+        terminalVelocity = airborneTerminalVelocity;
 
         sprite = GetNode("Sprite") as Sprite;
         animationPlayer = GetNode("AnimationPlayer") as AnimationPlayer;
         animationTree = GetNode("AnimationTree") as AnimationTree;
+        animationTree.SetActive(true);
+        animationNodeStateMachine = animationTree.Get("parameters/playback") as AnimationNodeStateMachine;
         animationPlayback = animationTree.Get("parameters/playback") as AnimationNodeStateMachinePlayback;
-        animationPlayback.Start("stand");
+        animationPlayback.Travel("run");
 
         hitbox = GetNode("Sprite/Hitbox") as Area2D;
         hitbox.Connect("area_entered", this, "_On_Hitbox_AreaEntered");
-
-        climbStamina = climbStaminaMax;
     }
 
     public override void _Process(float delta)
     {
         base._Process(delta);
-
-        GD.Print(moveVelocity.ToString());
     }
 
     public override void _PhysicsProcess(float delta)
@@ -102,7 +104,7 @@ public class Player : KinematicBody2D
 
                 if (IsOnWall())
                 {
-                    Transition(State.Sliding);
+                    Transition(State.WallSlide);
                 }
 
                 if (IsOnFloor())
@@ -110,16 +112,11 @@ public class Player : KinematicBody2D
                     Transition(State.Grounded);
                 }
                 break;
-            case State.Sliding:
+            case State.WallSlide:
                 HandleMovement();
                 HandleFalling(delta);
+                HandleWallJumping();
                 MoveAndSlide(moveVelocity, Vector2.Up);
-
-                if (Input.IsActionJustPressed("button_a"))
-                {
-                    moveVelocity.x = jumpSpeed * sprite.GetScale().x;
-                    moveVelocity.y = jumpSpeed;
-                }
 
                 if (!IsOnWall())
                 {
@@ -129,6 +126,47 @@ public class Player : KinematicBody2D
                 if (IsOnFloor())
                 {
                     Transition(State.Grounded);
+                }
+
+                if (Input.IsActionPressed("button_b"))
+                {
+                    Transition(State.Climbing);
+                }
+                break;
+            case State.Climbing:
+                MoveAndSlide(moveVelocity, Vector2.Up);
+
+                if (!Input.IsActionPressed("button_b"))
+                {
+                    Transition(State.WallSlide);
+                }
+
+                var spaceState = GetWorld2d().DirectSpaceState;
+                var facing = new Vector2(sprite.GetScale().x, 0.0f);
+                var result = spaceState.IntersectRay
+                (
+                    GlobalPosition, // From
+                    GlobalPosition + facing, // To
+                    new Godot.Collections.Array()
+                );
+                GD.Print(result["collider"]);
+
+                if (IsOnFloor())
+                {
+                    Transition(State.Grounded);
+                }
+
+                if (Input.IsActionPressed("dpad_up"))
+                {
+                    moveVelocity.y = -climbSpeed;
+                }
+                else if (Input.IsActionPressed("dpad_down"))
+                {
+                    moveVelocity.y = climbSpeed;
+                }
+                else
+                {
+                    moveVelocity.y = 0.0f;
                 }
                 break;
         }
@@ -155,13 +193,29 @@ public class Player : KinematicBody2D
                 break;
             case State.Attack:
                 break;
-            case State.Sliding:
+            case State.WallSlide:
                 break;
             case State.Climbing:
+                // Cancel any previous momentum when climbing walls
+                moveVelocity = Vector2.Zero;
                 break;
         }
-        
+
+        if (nextState == State.WallSlide)
+        {
+            terminalVelocity = wallSlideTerminalVelocity;
+        }
+        else
+        {
+            terminalVelocity = airborneTerminalVelocity;
+        }
+
         state = nextState;
+    }
+
+    private void AnimationSafeTravel(string name)
+    {
+        // ...
     }
 
     private void HandleMovement()
@@ -195,6 +249,15 @@ public class Player : KinematicBody2D
         }
     }
 
+    private void HandleWallJumping()
+    {
+        if (Input.IsActionJustPressed("button_a"))
+        {
+            moveVelocity.x = jumpSpeed * sprite.GetScale().x;
+            moveVelocity.y = jumpSpeed;
+        }
+    }
+
     private void HandleFalling(float delta)
     {
         // Don't maintain momentum when the player hits a cieling.
@@ -203,7 +266,14 @@ public class Player : KinematicBody2D
             moveVelocity.y = 0.0f;
         }
 
-        moveVelocity.y += jumpGravity * delta;
+        if (moveVelocity.y < 0.0f)
+        {
+            moveVelocity.y = Utils.Approach(moveVelocity.y, terminalVelocity, jumpGravity * delta);
+        }
+        else
+        {
+            moveVelocity.y = Utils.Approach(moveVelocity.y, terminalVelocity, fallGravity * delta);
+        }
     }
 
     private void HandleAttacking()
