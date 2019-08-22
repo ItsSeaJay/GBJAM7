@@ -91,6 +91,7 @@ anims/stand = SubResource( 5 )
 tree_root = ExtResource( 3 )
 anim_player = NodePath("../AnimationPlayer")
 active = true
+process_mode = 0
 root_motion_track = NodePath("Sprite:frame")
 parameters/playback = SubResource( 6 )
 

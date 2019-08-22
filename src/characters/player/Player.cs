@@ -62,8 +62,7 @@ public class Player : KinematicBody2D
         animationTree = GetNode("AnimationTree") as AnimationTree;
         animationTree.SetActive(true);
         animationPlayback = animationTree.Get("parameters/playback") as AnimationNodeStateMachinePlayback;
-        animationPlayback.Start("run");
-        animationPlayback.Travel("run");
+        animationPlayback.Start("stand");
 
         hitbox = GetNode("Sprite/Hitbox") as Area2D;
         hitbox.Connect("area_entered", this, "_On_Hitbox_AreaEntered");
@@ -212,26 +211,30 @@ public class Player : KinematicBody2D
         state = nextState;
     }
 
-    private void AnimationSafeTravel(string name)
-    {
-        // ...
-    }
-
     private void HandleMovement()
     {
         if (Input.IsActionPressed("dpad_left"))
         {
             moveVelocity.x = Utils.Approach(moveVelocity.x, -moveSpeed, moveAcceleration);
             sprite.SetScale(new Vector2(-1.0f, 1.0f));
+
+            if (animationPlayback.IsPlaying())
+                animationPlayback.Travel("run");
         }
         else if (Input.IsActionPressed("dpad_right"))
         {
             moveVelocity.x = Utils.Approach(moveVelocity.x, moveSpeed, moveAcceleration);
             sprite.SetScale(new Vector2(1.0f, 1.0f));
+
+            if (animationPlayback.IsPlaying())
+                animationPlayback.Travel("run");
         }
         else
         {
             moveVelocity.x = Utils.Approach(moveVelocity.x, 0.0f, moveFriction);
+
+            if (animationPlayback.IsPlaying())
+                animationPlayback.Travel("stand");
         }
     }
 
@@ -281,5 +284,10 @@ public class Player : KinematicBody2D
         {
             animationPlayback.Travel("attack");
         }
+    }
+
+    private void AnimationSafeTravel(string name)
+    {
+
     }
 }
