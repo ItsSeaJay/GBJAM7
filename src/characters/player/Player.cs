@@ -34,7 +34,6 @@ public class Player : KinematicBody2D
     private Sprite sprite;
     private AnimationPlayer animationPlayer;
     private AnimationTree animationTree;
-    private AnimationNodeStateMachine animationNodeStateMachine;
     private AnimationNodeStateMachinePlayback animationPlayback;
 
     private Area2D hitbox;
@@ -62,8 +61,8 @@ public class Player : KinematicBody2D
         animationPlayer = GetNode("AnimationPlayer") as AnimationPlayer;
         animationTree = GetNode("AnimationTree") as AnimationTree;
         animationTree.SetActive(true);
-        animationNodeStateMachine = animationTree.Get("parameters/playback") as AnimationNodeStateMachine;
         animationPlayback = animationTree.Get("parameters/playback") as AnimationNodeStateMachinePlayback;
+        animationPlayback.Start("run");
         animationPlayback.Travel("run");
 
         hitbox = GetNode("Sprite/Hitbox") as Area2D;
