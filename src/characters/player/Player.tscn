@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=2]
+[gd_scene load_steps=13 format=2]
 
 [ext_resource path="res://characters/player/Player.cs" type="Script" id=1]
 [ext_resource path="res://characters/player/player.png" type="Texture" id=2]
@@ -91,13 +91,31 @@ tracks/0/keys = {
 "values": [ 0, 4 ]
 }
 
+[sub_resource type="Animation" id=9]
+resource_name = "wall_slide"
+length = 0.2
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.1, 0.2 ),
+"transitions": PoolRealArray( 1, 1, 1 ),
+"update": 0,
+"values": [ 17, 18, 18 ]
+}
+
 [sub_resource type="AnimationNodeStateMachinePlayback" id=6]
 
 [node name="Player" type="KinematicBody2D"]
 script = ExtResource( 1 )
-jumpDuration = 0.64
+moveFriction = 16.0
+jumpDuration = 1.0
 jumpHeight = 32.0
-fallDuration = 0.48
+fallDuration = 0.9
 airborneTerminalVelocity = 256.0
 
 [node name="CollisionBox" type="CollisionShape2D" parent="."]
@@ -106,8 +124,8 @@ shape = SubResource( 1 )
 
 [node name="Sprite" type="Sprite" parent="."]
 texture = ExtResource( 2 )
-hframes = 18
-frame = 11
+hframes = 21
+frame = 15
 
 [node name="Hitbox" type="Area2D" parent="Sprite"]
 position = Vector2( 0, -8 )
@@ -123,6 +141,7 @@ anims/fall = SubResource( 7 )
 anims/jump = SubResource( 8 )
 anims/run = SubResource( 4 )
 anims/stand = SubResource( 5 )
+anims/wall_slide = SubResource( 9 )
 
 [node name="AnimationTree" type="AnimationTree" parent="."]
 tree_root = ExtResource( 3 )

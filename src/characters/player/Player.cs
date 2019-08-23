@@ -125,10 +125,11 @@ public class Player : KinematicBody2D
                 }
                 break;
             case State.WallSlide:
-                HandleMovement();
                 HandleFalling(delta);
                 HandleWallJumping();
                 MoveAndSlide(moveVelocity, Vector2.Up);
+
+                AnimationSafeTravel("wall_slide");
 
                 if (!IsOnWall())
                 {
