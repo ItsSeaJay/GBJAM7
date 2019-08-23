@@ -94,11 +94,25 @@ public class Player : KinematicBody2D
                 {
                     moveVelocity.x = 0.0f;
                 }
+
+                if (moveVelocity.x != 0.0f)
+                {
+                    AnimationSafeTravel("run");
+                }
                 break;
             case State.Airborne:
                 HandleMovement();
                 HandleFalling(delta);
                 MoveAndSlide(moveVelocity, Vector2.Up);
+
+                if (moveVelocity.y < 0.0f)
+                {
+                    AnimationSafeTravel("jump");
+                }
+                else
+                {
+                    AnimationSafeTravel("fall");
+                }
 
                 if (IsOnWall())
                 {
@@ -288,6 +302,9 @@ public class Player : KinematicBody2D
 
     private void AnimationSafeTravel(string name)
     {
-
+        if (animationPlayback.IsPlaying())
+        {
+            animationPlayback.Travel(name);
+        }
     }
 }

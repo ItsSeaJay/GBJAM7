@@ -1,7 +1,13 @@
-[gd_resource type="AnimationNodeStateMachine" load_steps=8 format=2]
+[gd_resource type="AnimationNodeStateMachine" load_steps=13 format=2]
 
 [sub_resource type="AnimationNodeAnimation" id=1]
 animation = "attack"
+
+[sub_resource type="AnimationNodeAnimation" id=8]
+animation = "fall"
+
+[sub_resource type="AnimationNodeAnimation" id=9]
+animation = "jump"
 
 [sub_resource type="AnimationNodeAnimation" id=2]
 animation = "run"
@@ -19,13 +25,23 @@ auto_advance = true
 
 [sub_resource type="AnimationNodeStateMachineTransition" id=7]
 
+[sub_resource type="AnimationNodeStateMachineTransition" id=10]
+
+[sub_resource type="AnimationNodeStateMachineTransition" id=11]
+
+[sub_resource type="AnimationNodeStateMachineTransition" id=12]
+
 [resource]
 states/attack/node = SubResource( 1 )
 states/attack/position = Vector2( 473, 72 )
+states/fall/node = SubResource( 8 )
+states/fall/position = Vector2( 958, 72 )
+states/jump/node = SubResource( 9 )
+states/jump/position = Vector2( 820, -14 )
 states/run/node = SubResource( 2 )
 states/run/position = Vector2( 666, -14 )
 states/stand/node = SubResource( 3 )
 states/stand/position = Vector2( 666, 72 )
-transitions = [ "attack", "stand", SubResource( 4 ), "stand", "attack", SubResource( 5 ), "run", "stand", SubResource( 6 ), "stand", "run", SubResource( 7 ) ]
+transitions = [ "attack", "stand", SubResource( 4 ), "stand", "attack", SubResource( 5 ), "run", "stand", SubResource( 6 ), "stand", "run", SubResource( 7 ), "stand", "jump", SubResource( 10 ), "jump", "fall", SubResource( 11 ), "fall", "stand", SubResource( 12 ) ]
 start_node = "stand"
 graph_offset = Vector2( -18, -56 )

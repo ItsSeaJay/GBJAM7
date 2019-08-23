@@ -1,7 +1,7 @@
 [gd_resource type="ShaderMaterial" load_steps=3 format=2]
 
 [ext_resource path="res://shaders/palette_swap/palette_swap.shader" type="Shader" id=1]
-[ext_resource path="res://palettes/classic.png" type="Texture" id=2]
+[ext_resource path="res://palettes/nymph.png" type="Texture" id=2]
 
 [resource]
 shader = ExtResource( 1 )

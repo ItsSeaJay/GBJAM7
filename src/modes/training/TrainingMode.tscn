@@ -17,3 +17,4 @@ tile_data = PoolIntArray( -65531, 2, 0, 0, 1, 0, 1, 1, 0, 2, 1, 0, 3, 1, 0, 4, 1
 position = Vector2( 80, 56 )
 moveFriction = 16.0
 jumpHeight = 48.0
+fallDuration = 0.5

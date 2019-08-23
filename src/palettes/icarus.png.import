@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/player4.png-d8010437e8ba1c41fcfb6edb25d82d96.stex"
+path="res://.import/icarus.png-cf8c8ee5d0978cf3993528536162bc10.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://characters/player/run/player4.png"
-dest_files=[ "res://.import/player4.png-d8010437e8ba1c41fcfb6edb25d82d96.stex" ]
+source_file="res://palettes/icarus.png"
+dest_files=[ "res://.import/icarus.png-cf8c8ee5d0978cf3993528536162bc10.stex" ]
 
 [params]
 

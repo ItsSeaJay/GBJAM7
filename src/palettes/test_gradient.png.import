@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/player3.png-d82fd5368635641fac40a535e57d7d53.stex"
+path="res://.import/test_gradient.png-785a8011ba5a02d37861c63799dcd52c.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://characters/player/run/player3.png"
-dest_files=[ "res://.import/player3.png-d82fd5368635641fac40a535e57d7d53.stex" ]
+source_file="res://palettes/test_gradient.png"
+dest_files=[ "res://.import/test_gradient.png-785a8011ba5a02d37861c63799dcd52c.stex" ]
 
 [params]
 

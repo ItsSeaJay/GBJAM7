@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/player6.png-2d51d31e2276e5584b434b1c8be09e25.stex"
+path="res://.import/rustic.png-a5fa5dc61bd5d614e1895f80f98cdf21.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://characters/player/run/player6.png"
-dest_files=[ "res://.import/player6.png-2d51d31e2276e5584b434b1c8be09e25.stex" ]
+source_file="res://palettes/rustic.png"
+dest_files=[ "res://.import/rustic.png-a5fa5dc61bd5d614e1895f80f98cdf21.stex" ]
 
 [params]
 
